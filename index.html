@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kejohanan Bola Sepak 12TKB - Tatau Sebauh 2026</title>
+    <title>Kejohanan Bola Sepak 12TKB 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -12,7 +12,6 @@
         .red-gradient { background: linear-gradient(135deg, #cc0000 0%, #660000 100%); }
         .card-glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .tab-active { border-bottom: 4px solid #ff0000; color: #ff0000; font-weight: 900; }
-        .sticky-nav { position: sticky; top: 0; z-index: 50; background: rgba(10, 10, 10, 0.95); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .input-dark { background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 4px; padding: 4px; font-size: 11px; text-align: center; }
         .loader { border: 4px solid #333; border-top: 4px solid #ff0000; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -20,273 +19,166 @@
 </head>
 <body class="pb-24">
 
-    <!-- HEADER BANNER -->
     <header class="w-full shadow-2xl">
         <img src="https://i.postimg.cc/L4rR3gJL/banner-Bolasepak-Zon-Anap.png" alt="Banner" class="w-full h-auto">
     </header>
 
-    <!-- NAVIGATION -->
-    <nav class="sticky-nav">
-        <div class="flex justify-around items-center p-4 text-[9px] uppercase tracking-tighter font-bold">
-            <button onclick="showTab('pasukan')" id="btn-pasukan" class="nav-btn tab-active">PASUKAN</button>
-            <button onclick="showTab('jadual')" id="btn-jadual" class="nav-btn">JADUAL</button>
-            <button onclick="showTab('keputusan')" id="btn-keputusan" class="nav-btn">KEPUTUSAN</button>
-            <button onclick="showTab('skor')" id="btn-skor" class="nav-btn">SKOR</button>
-            <button onclick="showTab('admin')" id="btn-admin" class="nav-btn text-gray-700"><i class="fas fa-user-cog"></i></button>
-        </div>
+    <nav class="sticky top-0 z-50 bg-black/95 p-4 border-b border-white/5 flex justify-around text-[9px] font-bold uppercase tracking-tighter">
+        <button onclick="showTab('pasukan')" id="btn-pasukan" class="nav-btn tab-active">PASUKAN</button>
+        <button onclick="showTab('jadual')" id="btn-jadual" class="nav-btn">JADUAL</button>
+        <button onclick="showTab('keputusan')" id="btn-keputusan" class="nav-btn">KEPUTUSAN</button>
+        <button onclick="showTab('skor')" id="btn-skor" class="nav-btn">SKOR</button>
+        <button onclick="showTab('admin')" id="btn-admin" class="nav-btn text-gray-700"><i class="fas fa-cog"></i></button>
     </nav>
 
     <main class="container mx-auto px-4 mt-6 max-w-lg">
         
         <div id="loading" class="flex flex-col items-center my-20 hidden">
             <div class="loader"></div>
-            <p class="mt-4 text-[10px] text-gray-500 uppercase tracking-widest italic">Sedang Mengambil Data...</p>
         </div>
 
         <!-- TAB 1: PASUKAN -->
         <section id="tab-pasukan" class="tab-content">
-            <img src="https://postimg.cc/jw2FYLJy" class="w-full h-auto rounded-xl shadow-2xl" alt="Pasukan">
+            <img src="https://i.postimg.cc/rmNXW4VZ/PASUKAN.png" class="w-full h-auto rounded-xl shadow-2xl" onerror="this.src='https://via.placeholder.com/500x300?text=Imej+Pasukan+Gagal+Dimuat'">
         </section>
 
-        <!-- TAB 2: JADUAL PERLAWANAN -->
+        <!-- TAB 2: JADUAL -->
         <section id="tab-jadual" class="tab-content hidden">
-            <img src="https://postimg.cc/ZBThBrD8" class="w-full h-auto rounded-xl shadow-2xl" alt="Jadual Grafik">
+            <img src="https://i.postimg.cc/sDc4Nd4b/jadual-perlawanan-new.png" class="w-full h-auto rounded-xl shadow-2xl" onerror="this.src='https://via.placeholder.com/500x300?text=Imej+Jadual+Gagal+Dimuat'">
         </section>
 
-        <!-- TAB 3: KEPUTUSAN PERLAWANAN (10 BOXES) -->
+        <!-- TAB 3: KEPUTUSAN -->
         <section id="tab-keputusan" class="tab-content hidden">
-            <h2 class="text-lg font-black border-l-4 border-red-600 pl-3 mb-6 uppercase italic tracking-tighter">Keputusan & Jadual Perlawanan</h2>
             <div id="match-list" class="space-y-4"></div>
         </section>
 
-        <!-- TAB 4: JADUAL SKOR (KEDUDUKAN) -->
+        <!-- TAB 4: SKOR -->
         <section id="tab-skor" class="tab-content hidden">
-            <h2 class="text-lg font-black border-l-4 border-red-600 pl-3 mb-6 uppercase italic tracking-tighter italic">Kedudukan Peringkat Kumpulan</h2>
             <div id="skor-list" class="space-y-10"></div>
         </section>
 
         <!-- TAB 5: ADMIN -->
         <section id="tab-admin" class="tab-content hidden">
             <div id="admin-auth" class="card-glass p-8 rounded-2xl text-center border-t-4 border-red-600">
-                <h2 class="text-xl font-bold mb-4 italic uppercase underline decoration-red-600">Akses Pentadbir</h2>
-                <input type="password" id="admin-pass" placeholder="KATA LALUAN" class="w-full p-4 rounded-xl bg-gray-900 border border-gray-800 focus:border-red-600 outline-none mb-4 text-center font-bold">
-                <button onclick="verifyAdmin()" class="w-full red-gradient p-4 rounded-xl font-black tracking-widest uppercase">MASUK</button>
+                <input type="password" id="admin-pass" placeholder="KATA LALUAN" class="w-full p-4 rounded-xl bg-gray-900 border border-gray-800 outline-none mb-4 text-center font-bold">
+                <button onclick="verifyAdmin()" class="w-full red-gradient p-4 rounded-xl font-black uppercase shadow-lg">LOG MASUK</button>
             </div>
 
-            <div id="admin-panel" class="hidden space-y-10">
-                <div class="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span class="text-[10px] font-bold text-green-500 uppercase tracking-widest italic animate-pulse">MOD ADMIN AKTIF</span>
-                    <button onclick="logoutAdmin()" class="text-[9px] bg-gray-800 px-3 py-1 rounded text-gray-400 uppercase">Keluar</button>
+            <div id="admin-panel" class="hidden space-y-10 text-black">
+                <div class="flex justify-between items-center text-white border-b border-white/5 pb-2">
+                    <span class="text-[10px] font-bold text-green-500 uppercase italic">ADMIN AKTIF</span>
+                    <button onclick="location.reload()" class="text-[9px] bg-gray-800 px-3 py-1 rounded">REFRESH</button>
                 </div>
-                
-                <!-- ADMIN: UPDATE JADUAL SKOR (MANUAL) -->
-                <div>
-                    <h3 class="text-xs font-black text-red-500 uppercase mb-4 italic tracking-widest">KEMASKINI SKOR PASUKAN (TAB 4)</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-[10px] bg-white/5 rounded-xl overflow-hidden border border-white/10">
-                            <thead class="bg-red-900/40 font-bold uppercase">
-                                <tr>
-                                    <th class="p-2 border border-white/5">Pasukan</th>
-                                    <th class="p-2 border border-white/5">M</th>
-                                    <th class="p-2 border border-white/5">K</th>
-                                    <th class="p-2 border border-white/5">S</th>
-                                    <th class="p-2 border border-white/5 text-yellow-500">Mata</th>
-                                    <th class="p-2 border border-white/5">JG</th>
-                                    <th class="p-2 border border-white/5">GB</th>
-                                    <th class="p-2 border border-white/5">BJ</th>
-                                    <th class="p-2 border border-white/5 text-center">Simpan</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-skor-rows"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- ADMIN: UPDATE SKOR PERLAWANAN (TAB 3) -->
-                <div>
-                    <h3 class="text-xs font-black text-red-500 uppercase mb-4 italic tracking-widest">KEMASKINI SKOR PERLAWANAN (TAB 3)</h3>
-                    <div id="admin-match-list" class="space-y-4"></div>
-                </div>
+                <div id="admin-skor-rows" class="overflow-x-auto bg-white p-2 rounded-xl"></div>
+                <div id="admin-match-list" class="space-y-4"></div>
             </div>
         </section>
 
     </main>
 
     <footer class="mt-12 text-center text-[9px] text-gray-600 pb-10 uppercase tracking-widest">
-        <p class="font-bold text-gray-500 border-t border-white/5 pt-6 inline-block px-10">Unit Kokurikulum SK Kuala Muput @ 2026</p>
+        Unit Kokurikulum SK Kuala Muput @ 2026
     </footer>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwfmaLCAHbT8JPm9okHud_Ili6QLRw7TbY_m2BQ7cpjDUR7VE896YrQv49nB6oH5iw8Ww/exec";
-        let MASTER_DATA = null;
+        let DB = null;
 
         async function refreshData() {
-            const activeTab = document.querySelector('.tab-active').id;
-            if(activeTab === 'btn-pasukan' || activeTab === 'btn-jadual') return;
-
             document.getElementById('loading').classList.remove('hidden');
             try {
                 const response = await fetch(API_URL);
-                MASTER_DATA = await response.json();
+                DB = await response.json();
                 renderUI();
-            } catch (e) { console.error("Error Fetching Data"); }
+            } catch (e) { alert("Ralat Data! Sila Refresh."); }
             document.getElementById('loading').classList.add('hidden');
         }
 
-        function showTab(tabId) {
+        function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('tab-active'));
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            document.getElementById('btn-' + tabId).classList.add('tab-active');
-            refreshData();
+            document.getElementById('tab-' + id).classList.remove('hidden');
+            document.getElementById('btn-' + id).classList.add('tab-active');
+            if(id !== 'pasukan' && id !== 'jadual') refreshData();
         }
 
         function renderUI() {
-            renderMatches();
-            renderSkor();
-            if(!document.getElementById('admin-panel').classList.contains('hidden')) renderAdmin();
-        }
-
-        function renderMatches() {
-            const container = document.getElementById('match-list');
-            container.innerHTML = MASTER_DATA.jadual.map(m => `
-                <div class="card-glass p-5 rounded-2xl border-l-4 ${m.Status === 'Selesai' ? 'border-gray-800' : 'border-red-600'}">
-                    <div class="flex justify-between text-[9px] uppercase font-bold text-gray-400 mb-4 tracking-tighter">
-                        <span><i class="far fa-clock mr-1 text-red-600"></i> ${m.Tarikh} | ${m.Tahap}</span>
-                        <span class="${m.Status === 'Selesai' ? '' : 'text-red-500 animate-pulse'}">${m.Status}</span>
+            // Render Tab 3: Keputusan
+            document.getElementById('match-list').innerHTML = DB.jadual.map(m => `
+                <div class="card-glass p-5 rounded-2xl border-l-4 border-red-600">
+                    <div class="flex justify-between text-[9px] font-bold text-gray-500 mb-2 uppercase">
+                        <span>Match ${m.Match_No} | ${m.Tahap}</span>
+                        <span class="text-red-500">${m.Status}</span>
                     </div>
-                    <div class="flex items-center justify-between gap-2 italic">
-                        <div class="flex-1 text-center font-black text-[10px] uppercase">${m.Team_1_ID}</div>
-                        <div class="bg-black/60 border border-white/5 px-4 py-2 rounded-xl text-xl font-black text-red-500 min-w-[80px] text-center">${m.Skor_1} - ${m.Skor_2}</div>
-                        <div class="flex-1 text-center font-black text-[10px] uppercase">${m.Team_2_ID}</div>
+                    <div class="flex items-center justify-between font-black italic">
+                        <span class="flex-1 text-center text-xs">${m.Team_1_ID}</span>
+                        <span class="bg-red-600 px-4 py-1 rounded-lg text-2xl mx-4">${m.Skor_1} - ${m.Skor_2}</span>
+                        <span class="flex-1 text-center text-xs">${m.Team_2_ID}</span>
                     </div>
-                    <div class="text-center mt-3 text-[8px] font-bold text-gray-700 uppercase">MATCH ${m.Match_No}</div>
                 </div>`).join('');
-        }
 
-        function renderSkor() {
-            const container = document.getElementById('skor-list');
-            container.innerHTML = ['A', 'B'].map(g => {
-                const teams = MASTER_DATA.kedudukan.filter(t => t.Pasukan.startsWith(g));
-                return `
-                <div class="card-glass rounded-2xl overflow-hidden shadow-xl">
-                    <div class="bg-red-900/20 p-4 font-black italic text-xs uppercase tracking-widest text-red-500">Pasukan ${g}</div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-[11px] text-left">
-                            <thead class="bg-white/5 uppercase text-gray-500 font-bold">
-                                <tr><th class="p-4">Zon</th><th class="p-4 text-center">Mata</th><th class="p-4 text-center">BJ</th><th class="p-4 text-center">Pos</th></tr>
-                            </thead>
-                            <tbody>
-                                ${teams.map(t => `<tr class="border-t border-white/5">
-                                    <td class="p-4 font-bold text-gray-200"><span class="text-[8px] text-gray-600 mr-1">${t.Pasukan}</span> ${t.Zon || '-'}</td>
-                                    <td class="p-4 text-center font-black text-red-500 text-base">${t.Mata}</td>
-                                    <td class="p-4 text-center text-gray-400 font-bold italic text-[10px]">${t['Beza Jaringan (BJ)']}</td>
-                                    <td class="p-4 text-center text-yellow-500 font-bold">${t.Kedudukan}</td>
-                                </tr>`).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>`;
-            }).join('');
+            // Render Tab 4: Skor
+            document.getElementById('skor-list').innerHTML = ['A', 'B'].map(g => `
+                <div class="card-glass rounded-2xl overflow-hidden shadow-xl mb-6">
+                    <div class="bg-red-900/20 p-4 font-black italic text-xs uppercase text-red-500">Pasukan ${g}</div>
+                    <table class="w-full text-[11px] text-left">
+                        <thead class="bg-white/5 uppercase text-gray-500 font-bold">
+                            <tr><th class="p-3">Zon</th><th class="p-3 text-center">Mata</th><th class="p-3 text-center">BJ</th></tr>
+                        </thead>
+                        <tbody>
+                            ${DB.kedudukan.filter(t => t.Pasukan.startsWith(g)).map(t => `
+                            <tr class="border-t border-white/5">
+                                <td class="p-3 font-bold"><span class="text-[8px] text-gray-600 mr-1">${t.Pasukan}</span> ${t.Zon}</td>
+                                <td class="p-3 text-center font-black text-red-500 text-lg">${t.Mata}</td>
+                                <td class="p-3 text-center text-gray-400 font-bold italic">${t['Beza Jaringan (BJ)']}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>`).join('');
+
+            // Render Admin: Skor Manual
+            document.getElementById('admin-skor-rows').innerHTML = `
+                <table class="w-full text-[10px]">
+                    <tr class="bg-gray-100 uppercase"><th>ID</th><th>M</th><th>K</th><th>S</th><th>Mata</th><th>BJ</th><th>Zon</th><th>S</th></tr>
+                    ${DB.kedudukan.map(t => `
+                    <tr class="border-b">
+                        <td class="font-bold p-1">${t.Pasukan}</td>
+                        <td><input type="number" id="m-${t.Pasukan}" value="${t.Menang}" class="w-8 border"></td>
+                        <td><input type="number" id="k-${t.Pasukan}" value="${t.Kalah}" class="w-8 border"></td>
+                        <td><input type="number" id="s-${t.Pasukan}" value="${t.Seri}" class="w-8 border"></td>
+                        <td><input type="number" id="mata-${t.Pasukan}" value="${t.Mata}" class="w-8 border font-bold"></td>
+                        <td><input type="number" id="bj-${t.Pasukan}" value="${t['Beza Jaringan (BJ)']}" class="w-8 border"></td>
+                        <td><input type="text" id="z-${t.Pasukan}" value="${t.Zon}" class="w-16 border"></td>
+                        <td><button onclick="saveManual('${t.Pasukan}')" class="bg-green-600 text-white p-1 rounded">OK</button></td>
+                    </tr>`).join('')}
+                </table>`;
         }
 
         function verifyAdmin() {
-            const p = document.getElementById('admin-pass').value;
-            if (p === "ZONANAP2026") {
+            if (document.getElementById('admin-pass').value === "ZONANAP2026") {
                 document.getElementById('admin-auth').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
-                renderAdmin();
-            } else if(p.toUpperCase() === "ZONANAP2026") { alert("GUNAKAN CAPSLOCK!"); }
-            else { alert("KATA LALUAN SALAH!"); }
+                renderUI();
+            } else { alert("SALAH!"); }
         }
 
-        function logoutAdmin() {
-            document.getElementById('admin-auth').classList.remove('hidden');
-            document.getElementById('admin-panel').classList.add('hidden');
-        }
-
-        function renderAdmin() {
-            // Render Admin Skor (Table Manual)
-            document.getElementById('admin-skor-rows').innerHTML = MASTER_DATA.kedudukan.map(t => `
-                <tr class="border-t border-white/5">
-                    <td class="p-2 font-black text-red-500 text-center">${t.Pasukan}</td>
-                    <td class="p-1"><input type="number" id="m-${t.Pasukan}" value="${t.Menang}" class="input-dark w-10"></td>
-                    <td class="p-1"><input type="number" id="k-${t.Pasukan}" value="${t.Kalah}" class="input-dark w-10"></td>
-                    <td class="p-1"><input type="number" id="s-${t.Pasukan}" value="${t.Seri}" class="input-dark w-10"></td>
-                    <td class="p-1"><input type="number" id="mata-${t.Pasukan}" value="${t.Mata}" class="input-dark w-10 font-black text-yellow-400"></td>
-                    <td class="p-1"><input type="number" id="jg-${t.Pasukan}" value="${t['Jaringan (JG)']}" class="input-dark w-10"></td>
-                    <td class="p-1"><input type="number" id="gb-${t.Pasukan}" value="${t['Bolos (GB)']}" class="input-dark w-10"></td>
-                    <td class="p-1"><input type="number" id="bj-${t.Pasukan}" value="${t['Beza Jaringan (BJ)']}" class="input-dark w-10"></td>
-                    <td class="p-2 text-center"><button onclick="saveManualSkor('${t.Pasukan}')" class="bg-blue-600 p-2 rounded text-[8px] uppercase font-black">Save</button></td>
-                </tr>`).join('');
-
-            // Render Admin Matches
-            document.getElementById('admin-match-list').innerHTML = MASTER_DATA.jadual.map(m => `
-                <div class="bg-white text-black p-4 rounded-xl shadow-2xl">
-                    <p class="text-[9px] font-black text-gray-400 mb-2 uppercase border-b pb-1">KEMASKINI MATCH ${m.Match_No}</p>
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="flex flex-col items-center gap-1">
-                            <button onclick="step('s1-${m.Match_No}', 1)" class="bg-green-500 text-white w-10 h-8 rounded-lg font-bold">+</button>
-                            <input type="number" id="s1-${m.Match_No}" value="${m.Skor_1}" readonly class="w-10 text-center font-black text-lg bg-transparent border-none">
-                            <button onclick="step('s1-${m.Match_No}', -1)" class="bg-red-500 text-white w-10 h-8 rounded-lg font-bold">-</button>
-                        </div>
-                        <span class="text-[9px] font-black text-gray-300 italic">VS</span>
-                        <div class="flex flex-col items-center gap-1">
-                            <button onclick="step('s2-${m.Match_No}', 1)" class="bg-green-500 text-white w-10 h-8 rounded-lg font-bold">+</button>
-                            <input type="number" id="s2-${m.Match_No}" value="${m.Skor_2}" readonly class="w-10 text-center font-black text-lg bg-transparent border-none">
-                            <button onclick="step('s2-${m.Match_No}', -1)" class="bg-red-500 text-white w-10 h-8 rounded-lg font-bold">-</button>
-                        </div>
-                        <select id="st-${m.Match_No}" class="flex-1 p-2 bg-gray-100 rounded-lg font-black text-[9px] uppercase">
-                            <option ${m.Status === 'Belum Mula' ? 'selected' : ''}>Belum Mula</option>
-                            <option ${m.Status === 'Selesai' ? 'selected' : ''}>Selesai</option>
-                        </select>
-                    </div>
-                    <button onclick="saveMatch('${m.Match_No}')" class="w-full mt-3 red-gradient text-white py-3 rounded-xl font-black text-[9px] uppercase tracking-widest shadow-lg">KEMASKINI SKOR</button>
-                </div>`).join('');
-        }
-
-        // Logic Helpers
-        function step(id, val) {
-            const input = document.getElementById(id);
-            input.value = Math.max(0, (parseInt(input.value) || 0) + val);
-        }
-
-        async function saveManualSkor(id) {
+        async function saveManual(id) {
             const body = {
                 action: 'updateManualStandings',
                 pasukanId: id,
-                zon: MASTER_DATA.kedudukan.find(t => t.Pasukan === id).Zon,
+                zon: document.getElementById(`z-${id}`).value,
                 menang: document.getElementById(`m-${id}`).value,
                 kalah: document.getElementById(`k-${id}`).value,
                 seri: document.getElementById(`s-${id}`).value,
                 mata: document.getElementById(`mata-${id}`).value,
-                jaringan: document.getElementById(`jg-${id}`).value,
-                bolos: document.getElementById(`gb-${id}`).value,
+                jaringan: 0, bolos: 0, 
                 beza: document.getElementById(`bj-${id}`).value,
                 kedudukan: 1
             };
-            await push(body);
-        }
-
-        async function saveMatch(mNo) {
-            const body = {
-                action: 'updateSkor',
-                matchNo: mNo,
-                skor1: document.getElementById(`s1-${mNo}`).value,
-                skor2: document.getElementById(`s2-${mNo}`).value,
-                status: document.getElementById(`st-${mNo}`).value
-            };
-            await push(body);
-        }
-
-        async function push(body) {
-            document.getElementById('loading').style.display = 'flex';
-            try {
-                await fetch(API_URL, { method: 'POST', body: JSON.stringify(body) });
-                alert("BERJAYA!");
-                refreshData();
-            } catch (e) { alert("GAGAL!"); }
-            document.getElementById('loading').style.display = 'none';
+            document.getElementById('loading').classList.remove('hidden');
+            await fetch(API_URL, { method: 'POST', body: JSON.stringify(body) });
+            alert("Berjaya!");
+            refreshData();
         }
 
         window.onload = () => showTab('pasukan');
