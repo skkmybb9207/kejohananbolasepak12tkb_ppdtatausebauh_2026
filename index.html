@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kejohanan Bola Sepak 12TKB - Tatau Sebauh 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; color: #ffffff; }
+        .red-gradient { background: linear-gradient(135deg, #cc0000 0%, #660000 100%); }
+        .gold-text { color: #ffd700; }
+        .tab-active { border-bottom: 4px solid #ff0000; color: #ff0000; font-weight: 900; }
+        .card-glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .sticky-nav { position: sticky; top: 0; z-index: 50; background: rgba(10, 10, 10, 0.95); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .loader { border: 4px solid #333; border-top: 4px solid #ff0000; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    </style>
+</head>
+<body class="pb-24">
+
+    <!-- HEADER BANNER -->
+    <header class="w-full shadow-2xl">
+        <img src="https://i.postimg.cc/L4rR3gJL/banner-Bolasepak-Zon-Anap.png" alt="Banner Kejohanan" class="w-full h-auto">
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav class="sticky-nav">
+        <div class="flex justify-around items-center p-4 text-[10px] uppercase tracking-widest font-bold">
+            <button onclick="showTab('home')" id="btn-home" class="nav-btn tab-active">UTAMA</button>
+            <button onclick="showTab('standings')" id="btn-standings" class="nav-btn">KEDUDUKAN</button>
+            <button onclick="showTab('matches')" id="btn-matches" class="nav-btn">KEPUTUSAN</button>
+            <button onclick="showTab('admin')" id="btn-admin" class="nav-btn text-gray-700"><i class="fas fa-user-shield"></i></button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 mt-6 max-w-lg">
+        
+        <div id="loading" class="flex flex-col items-center my-20">
+            <div class="loader"></div>
+            <p class="mt-4 text-xs text-gray-500 animate-pulse uppercase tracking-widest">Memuatkan Data...</p>
+        </div>
+
+        <!-- TAB: HOME -->
+        <section id="tab-home" class="tab-content hidden">
+            <div class="red-gradient p-6 rounded-2xl shadow-2xl mb-6 relative overflow-hidden">
+                <div class="relative z-10">
+                    <h1 class="text-2xl font-black italic tracking-tighter uppercase leading-tight">BOLA SEPAK 12TKB</h1>
+                    <p class="gold-text font-bold text-[10px] uppercase leading-tight mt-1">KARNIVAL SUKAN DAN PERMAINAN <br>PERINGKAT DAERAH TATAU / SEBAUH <br>TAHUN 2026</p>
+                </div>
+                <i class="fas fa-futbol absolute -right-4 -bottom-4 text-white/10 text-8xl"></i>
+            </div>
+            <div class="card-glass p-5 rounded-2xl text-center">
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest italic">Unit Kokurikulum SK Kuala Muput</p>
+            </div>
+        </section>
+
+        <!-- TAB: KEDUDUKAN -->
+        <section id="tab-standings" class="tab-content hidden">
+            <h2 class="text-lg font-black border-l-4 border-red-600 pl-3 mb-6 uppercase italic italic">Carta Kedudukan</h2>
+            <div id="standings-list" class="space-y-8"></div>
+        </section>
+
+        <!-- TAB: KEPUTUSAN -->
+        <section id="tab-matches" class="tab-content hidden">
+            <h2 class="text-lg font-black border-l-4 border-red-600 pl-3 mb-6 uppercase italic italic">Jadual & Keputusan</h2>
+            <div id="match-list" class="space-y-4"></div>
+        </section>
+
+        <!-- TAB: ADMIN -->
+        <section id="tab-admin" class="tab-content hidden">
+            <!-- LOGIN ADMIN -->
+            <div id="admin-auth" class="card-glass p-8 rounded-2xl text-center border-t-4 border-red-600">
+                <h2 class="text-xl font-bold mb-6 italic uppercase underline decoration-red-600">Akses Pentadbir</h2>
+                <input type="password" id="admin-pass" placeholder="KATA LALUAN" class="w-full p-4 rounded-xl bg-gray-900 border border-gray-800 focus:border-red-600 outline-none mb-4 text-center font-bold">
+                <button onclick="verifyAdmin()" class="w-full red-gradient p-4 rounded-xl font-black tracking-widest uppercase">MASUK</button>
+            </div>
+
+            <!-- DASHBOARD ADMIN -->
+            <div id="admin-panel" class="hidden space-y-10">
+                <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span class="text-[10px] font-bold text-green-500 uppercase tracking-widest italic animate-pulse"><i class="fas fa-circle mr-1 text-[8px]"></i> Mod Kemaskini Aktif</span>
+                    <button onclick="logoutAdmin()" class="text-[9px] bg-gray-800 px-3 py-1 rounded text-gray-400 uppercase">Keluar</button>
+                </div>
+
+                <!-- 1. UPDATE PASUKAN (UNDIAN) -->
+                <div>
+                    <h3 class="text-xs font-black text-red-500 uppercase mb-4 tracking-widest"><i class="fas fa-random mr-2"></i> Kemaskini Undian Pasukan</h3>
+                    <div id="admin-mapping" class="grid grid-cols-1 gap-3"></div>
+                </div>
+
+                <!-- 2. UPDATE SKOR -->
+                <div>
+                    <h3 class="text-xs font-black text-red-500 uppercase mb-4 tracking-widest"><i class="fas fa-edit mr-2"></i> Kemaskini Skor & Status</h3>
+                    <div id="admin-score-list" class="space-y-4"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-12 text-center text-[10px] text-gray-600 pb-10">
+        <p class="font-bold text-gray-500 uppercase tracking-widest border-t border-white/5 pt-6 inline-block px-10">
+            Unit Kokurikulum SK Kuala Muput @ 2026
+        </p>
+    </footer>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwfmaLCAHbT8JPm9okHud_Ili6QLRw7TbY_m2BQ7cpjDUR7VE896YrQv49nB6oH5iw8Ww/exec";
+        let MASTER_DATA = null;
+
+        async function refreshData() {
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                const response = await fetch(API_URL);
+                MASTER_DATA = await response.json();
+                renderUI();
+            } catch (error) { console.error("Fetch error"); }
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('tab-active'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('btn-' + tabId).classList.add('tab-active');
+            if (tabId !== 'admin') refreshData();
+        }
+
+        function renderUI() {
+            renderStandings();
+            renderMatches();
+            if(!document.getElementById('admin-panel').classList.contains('hidden')) renderAdmin();
+        }
+
+        function renderStandings() {
+            const container = document.getElementById('standings-list');
+            container.innerHTML = ['A', 'B'].map(g => {
+                const teams = MASTER_DATA.kedudukan.filter(t => t.Pasukan.startsWith(g));
+                return `
+                <div class="card-glass rounded-2xl overflow-hidden mb-6">
+                    <div class="bg-red-900/20 p-4 font-black italic text-xs uppercase tracking-widest text-red-500">Kumpulan ${g}</div>
+                    <table class="w-full text-[11px] text-left">
+                        <thead class="bg-white/5 uppercase text-gray-500 font-black">
+                            <tr><th class="p-4 italic">Zon</th><th class="p-4 text-center">P</th><th class="p-4 text-center">BJ</th><th class="p-4 text-center">Mata</th></tr>
+                        </thead>
+                        <tbody>
+                            ${teams.map(t => {
+                                const zon = MASTER_DATA.pasukan.find(p => p.Slot_ID === t.Pasukan);
+                                return `<tr class="border-t border-white/5">
+                                    <td class="p-4 font-bold text-gray-300"><span class="text-[8px] text-gray-600 mr-1">${t.Pasukan}</span> ${zon ? zon['Nama Zon (Isi lepas undi)'] : '-'}</td>
+                                    <td class="p-4 text-center">${parseInt(t.Menang)+parseInt(t.Kalah)+parseInt(t.Seri)}</td>
+                                    <td class="p-4 text-center">${t['Beza Jaringan (BJ)']}</td>
+                                    <td class="p-4 text-center font-black text-red-500 text-base">${t.Mata}</td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
+            }).join('');
+        }
+
+        function renderMatches() {
+            const container = document.getElementById('match-list');
+            container.innerHTML = MASTER_DATA.jadual.map(m => {
+                const t1 = MASTER_DATA.pasukan.find(p => p.Slot_ID === m.Team_1_ID);
+                const t2 = MASTER_DATA.pasukan.find(p => p.Slot_ID === m.Team_2_ID);
+                return `
+                <div class="card-glass p-5 rounded-2xl border-l-4 ${m.Status === 'Selesai' ? 'border-gray-800' : 'border-red-600'}">
+                    <div class="flex justify-between text-[9px] uppercase font-bold text-gray-500 mb-4 tracking-tighter">
+                        <span><i class="far fa-clock mr-1"></i> ${m.Tarikh} | ${m.Masa}</span>
+                        <span class="${m.Status === 'Selesai' ? '' : 'text-red-500 animate-pulse'}">${m.Status}</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex-1 text-center font-black text-[11px] uppercase leading-tight">${t1 ? t1['Nama Zon (Isi lepas undi)'] : m.Team_1_ID}</div>
+                        <div class="bg-black/60 border border-white/5 px-4 py-2 rounded-xl text-xl font-black italic text-red-500 min-w-[80px] text-center">${m.Skor_1} - ${m.Skor_2}</div>
+                        <div class="flex-1 text-center font-black text-[11px] uppercase leading-tight">${t2 ? t2['Nama Zon (Isi lepas undi)'] : m.Team_2_ID}</div>
+                    </div>
+                    <div class="text-center mt-3 text-[8px] font-black text-gray-700 uppercase tracking-widest">${m.Tahap} • MATCH ${m.Match_No}</div>
+                </div>`;
+            }).join('');
+        }
+
+        // ADMIN LOGIC
+        function verifyAdmin() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === "ZONANAP2026") {
+                document.getElementById('admin-auth').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                renderAdmin();
+            } else if (pass.toUpperCase() === "ZONANAP2026") {
+                alert("KATA LALUAN SALAH!\nAktifkan CAPSLOCK (ZONANAP2026).");
+            } else { alert("AKSES DINAFIKAN!"); }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('admin-auth').classList.remove('hidden');
+            document.getElementById('admin-panel').classList.add('hidden');
+        }
+
+        function renderAdmin() {
+            // Render Mapping Pasukan (Undian)
+            const mapContainer = document.getElementById('admin-mapping');
+            mapContainer.innerHTML = MASTER_DATA.pasukan.map(p => `
+                <div class="bg-white/5 p-3 rounded-xl flex items-center justify-between gap-4 border border-white/5">
+                    <span class="text-xs font-black text-red-500 w-10">${p.Slot_ID}</span>
+                    <select id="map-${p.Slot_ID}" class="flex-1 bg-gray-900 text-white text-[10px] p-2 rounded-lg border border-gray-700">
+                        <option value="">-- Pilih Zon --</option>
+                        ${MASTER_DATA.zon.map(z => `<option value="${z['Nama Zon']}" ${p['Nama Zon (Isi lepas undi)'] === z['Nama Zon'] ? 'selected' : ''}>${z['Nama Zon']}</option>`).join('')}
+                    </select>
+                    <button onclick="saveMapping('${p.Slot_ID}')" class="bg-green-600 text-white text-[9px] font-bold px-3 py-2 rounded-lg uppercase tracking-tighter">Link</button>
+                </div>
+            `).join('');
+
+            // Render Skor (With + / - buttons)
+            const scoreContainer = document.getElementById('admin-score-list');
+            scoreContainer.innerHTML = MASTER_DATA.jadual.map(m => `
+                <div class="bg-white text-black p-4 rounded-2xl shadow-xl">
+                    <p class="text-[9px] font-black text-gray-400 mb-3 uppercase tracking-widest border-b pb-1">MATCH ${m.Match_No} (${m.Tahap})</p>
+                    <div class="flex items-center justify-between gap-2">
+                        <!-- Pasukan 1 Controls -->
+                        <div class="flex flex-col items-center gap-1">
+                            <button onclick="changeScore('s1-${m.Match_No}', 1)" class="bg-green-500 text-white w-10 h-8 rounded-lg font-bold">+</button>
+                            <input type="number" id="s1-${m.Match_No}" value="${m.Skor_1}" readonly class="w-10 text-center font-black text-xl bg-transparent">
+                            <button onclick="changeScore('s1-${m.Match_No}', -1)" class="bg-red-500 text-white w-10 h-8 rounded-lg font-bold">-</button>
+                        </div>
+                        <span class="text-[9px] font-bold text-gray-300 italic uppercase">VS</span>
+                        <!-- Pasukan 2 Controls -->
+                        <div class="flex flex-col items-center gap-1">
+                            <button onclick="changeScore('s2-${m.Match_No}', 1)" class="bg-green-500 text-white w-10 h-8 rounded-lg font-bold">+</button>
+                            <input type="number" id="s2-${m.Match_No}" value="${m.Skor_2}" readonly class="w-10 text-center font-black text-xl bg-transparent">
+                            <button onclick="changeScore('s2-${m.Match_No}', -1)" class="bg-red-500 text-white w-10 h-8 rounded-lg font-bold">-</button>
+                        </div>
+                        <select id="st-${m.Match_No}" class="flex-1 p-2 bg-gray-100 rounded-lg font-black text-[9px] uppercase border border-gray-200">
+                            <option ${m.Status === 'Belum Mula' ? 'selected' : ''}>Belum Mula</option>
+                            <option ${m.Status === 'Selesai' ? 'selected' : ''}>Selesai</option>
+                        </select>
+                    </div>
+                    <button onclick="saveScore('${m.Match_No}')" class="w-full mt-3 red-gradient text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all">Sahkan Skor</button>
+                </div>
+            `).join('');
+        }
+
+        // Action Handlers
+        function changeScore(id, val) {
+            const input = document.getElementById(id);
+            let current = parseInt(input.value) || 0;
+            input.value = Math.max(0, current + val); // Prevent negative
+        }
+
+        async function saveMapping(slotId) {
+            const zon = document.getElementById(`map-${slotId}`).value;
+            if(!confirm(`Link kan ${slotId} kepada ${zon}?`)) return;
+            await apiPost({ action: 'updateMapping', slotId: slotId, namaZon: zon });
+        }
+
+        async function saveScore(mNo) {
+            const s1 = document.getElementById(`s1-${mNo}`).value;
+            const s2 = document.getElementById(`s2-${mNo}`).value;
+            const st = document.getElementById(`st-${mNo}`).value;
+            if(!confirm(`Sahkan Skor Match ${mNo}: ${s1} - ${s2}?`)) return;
+            await apiPost({ action: 'updateSkor', matchNo: mNo, skor1: s1, skor2: s2, status: st });
+        }
+
+        async function apiPost(body) {
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(body) });
+                alert("Berjaya Dikemaskini!");
+                refreshData();
+            } catch (e) { alert("Ralat sambungan!"); }
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        window.onload = () => showTab('home');
+    </script>
+</body>
+</html>
